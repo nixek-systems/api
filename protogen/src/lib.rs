@@ -1,1 +1,1 @@
-include!(concat!(env!("OUT_DIR"), "/nixek.rs"));
+tonic::include_proto!("nixek");
