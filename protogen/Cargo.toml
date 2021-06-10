@@ -1,0 +1,11 @@
+[package]
+name = "protogen"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+prost = "0.7.0"
+tonic = "0.4.2"
+
+[build-dependencies]
+tonic-build = { version = "0.4.2", features = ["prost"] }
