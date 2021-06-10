@@ -1,0 +1,27 @@
+syntax = "proto3";
+package nixek;
+
+service Api {
+  // Register is called by nixekd when it first launches.
+  // It provides basic metadata about the machine and its configuration.
+  // In exchange, the nixek api server gives it a UUID to identify itself with
+  // in future requests, tells it metadata about itself, etc.
+  rpc RegisterMachine(ApiRegisterMachineReq) returns (ApiRegisterMachineResp);
+}
+
+message ApiRegisterMachineReq {
+  // The persistent machine ID for this machine.
+  // This will typically be the actual machine-id of the system, but for
+  // machines without a persistent disk (e.g. those booting on a ramdisk via
+  // pxe), this may be any arbitrary unique identifier.
+  string machine_id = 1;
+
+  // non-unique name, for display purposes only.
+  string init_name = 2;
+  string init_group = 3;
+}
+
+message ApiRegisterMachineResp {
+  string name = 1;
+  string group = 2;
+}
