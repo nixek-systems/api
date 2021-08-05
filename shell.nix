@@ -4,4 +4,7 @@ mkShell {
   buildInputs = [
     protobuf
   ];
+  shellHook = ''
+    export PROTOC=${protobuf}/bin/protoc
+  '';
 }
