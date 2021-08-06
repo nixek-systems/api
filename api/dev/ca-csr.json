@@ -1,0 +1,16 @@
+{
+  "CN": "Local dev CA",
+  "key": {
+    "algo": "rsa",
+    "size": 4096
+  },
+  "names": [
+    {
+      "C": "US",
+      "L": "Seattle",
+      "O": "Local Testing, Ltd",
+      "OU": "The Snakeoil Team",
+      "ST": "WA"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+    "CN": "localhost",
+    "hosts": [
+        "localhost",
+        "local.dev.nixek.systems"
+    ],
+    "key": {
+        "algo": "rsa",
+        "size": 4096
+    },
+    "names": [
+        {
+            "C": "US",
+            "ST": "CA",
+            "L": "Seattle"
+        }
+    ]
+}
