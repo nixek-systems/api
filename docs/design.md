@@ -17,10 +17,10 @@ buncha grpc
 MVP is just a list of clusters w/ online nodes, their roles, and what version
 of software they're running.
 
-### Daemon Bootstrapping Security
+### Daemon Authentication
 
-Users create "bootstrapping tokens" which may optionally be scoped to specific
-clusters and roles. They may also be single use, or unlimited use.
+Users create "authentication tokens" which may optionally be scoped to specific
+clusters and roles.
 
 For now, they're nothing fancy (just a shared secret). We can improve this
 later.
@@ -28,12 +28,10 @@ later.
 This token will be passed to a nixek daemon and let it join any cluster+role
 within the scope of that token.
 
-On joining the cluster, the node will generate a TLS key, and request a client
-certificate from the server. Effectively, the bootstrap token is exchanged for
-a TLS certificate, allowing all future communication to occur using mutual TLS.
-
-Sufficient information to identify the host will be encoded in the CN, and it
-will be validated appropriately before issuing the client certificate.
+In the future, it may make sense to implement something more robust (i.e. make
+the authentication token a bootstrapping token instead), but for now, just
+having what amounts to bearer token auth seems like a reasonably expedient
+option.
 
 ### Data storage
 

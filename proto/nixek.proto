@@ -1,36 +1,6 @@
 syntax = "proto3";
 package nixek;
 
-service BootstrapApi {
-  // GetTokenMetadata is used to determine what cluster/role/account this token
-  // is for. This must be called before ExchangeToken since the CSR will include some of this metadata in the
-  rpc GetTokenMetadata(BootstrapApiGetTokenMetadataReq) returns (BootstrapApiGetTokenMetadataResp);
-  // Exchange is called by the nixek daemon on initial startup in order to
-  // provision a client certificate to persist.
-  rpc ExchangeToken(BootstrapApiExchangeReq) returns (BootstrapApiExchangeResp);
-}
-
-message BootstrapApiGetTokenMetadataReq {
-  string token = 1;
-}
-
-message BootstrapApiGetTokenMetadataResp {
-  string account_id = 1;
-  string cluster_id = 2;
-  string role_id = 3;
-}
-
-message BootstrapApiExchangeReq {
-  // The opaque token to exchange
-  string token = 1;
-  // A CSR. The CN must contain the machine ID.
-  string csr = 2;
-}
-
-message BootstrapApiExchangeResp {
-  string cert = 1;
-}
-
 service MachineApi {
   // Register is called by nixekd when it first launches.
   // It provides basic metadata about the machine and its configuration.

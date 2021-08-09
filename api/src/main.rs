@@ -1,36 +1,28 @@
 use tonic::{Request, Response, Status};
-use tonic::transport::{Certificate, Identity, Server, ServerTlsConfig};
+use tonic::transport::Server;
 
 use anyhow::{Result, bail};
 use protogen::*;
-use protogen::bootstrap_api_server::*;
+use protogen::machine_api_server::*;
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
 pub struct Config {
+    postgres_uri: String,
     listen_addr: String,
-
-    server_cert: String,
-    server_key: String,
-    client_ca_cert: String,
 }
 
-#[derive(Debug, Default)]
-pub struct Svc {}
+#[derive(Debug)]
+pub struct Svc {
+    pgclient: tokio_postgres::Client,
+}
 
 #[tonic::async_trait]
-impl BootstrapApi for Svc {
-    async fn get_token_metadata(
+impl MachineApi for Svc {
+    async fn register(
         &self,
-        _req: Request<BootstrapApiGetTokenMetadataReq>,
-    ) -> Result<Response<BootstrapApiGetTokenMetadataResp>, Status> {
-        unimplemented!()
-    }
-
-    async fn exchange_token(
-        &self,
-        _req: Request<BootstrapApiExchangeReq>,
-    ) -> Result<Response<BootstrapApiExchangeResp>, Status> {
+        _req: Request<MachineApiRegisterReq>,
+    ) -> Result<Response<MachineApiRegisterResp>, Status> {
         unimplemented!()
     }
 }
@@ -43,18 +35,21 @@ async fn main() -> Result<()> {
     }
     let conf: Config = serde_json::from_reader(std::fs::File::open(&args[1])?)?;
 
-    let addr = conf.listen_addr.parse()?;
-    let api = Svc::default();
-    let client_ca_cert = Certificate::from_pem(conf.client_ca_cert);
+    let (pgclient, pgconn) = tokio_postgres::connect(&conf.postgres_uri, tokio_postgres::NoTls).await?;
 
-    let server_identity = Identity::from_pem(conf.server_cert, conf.server_key);
-    let tls = ServerTlsConfig::new()
-        .identity(server_identity)
-        .client_ca_root(client_ca_cert);
+    let addr = conf.listen_addr.parse()?;
+    let api = Svc{
+        pgclient,
+    };
+
+    tokio::spawn(async move {
+        if let Err(e) = pgconn.await {
+            eprintln!("connection error: {}", e);
+        }
+    });
 
     Server::builder()
-        .tls_config(tls)?
-        .add_service(BootstrapApiServer::new(api))
+        .add_service(MachineApiServer::new(api))
         .serve(addr)
         .await?;
 
